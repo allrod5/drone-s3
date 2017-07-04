@@ -77,6 +77,9 @@ type Plugin struct {
 	PathStyle bool
 	// Dry run without uploading/
 	DryRun bool
+
+	// Content-Type
+	ContentType map[string]string
 }
 
 // Exec runs the plugin
@@ -107,6 +110,8 @@ func (p *Plugin) Exec() error {
 		"region":   p.Region,
 		"endpoint": p.Endpoint,
 		"bucket":   p.Bucket,
+		"source":   p.Source,
+		"content-type": p.ContentType,
 	}).Info("Attempting to upload")
 
 	matches, err := matches(p.Source, p.Exclude)
@@ -134,9 +139,8 @@ func (p *Plugin) Exec() error {
 			target = "/" + target
 		}
 
-		// amazon S3 has pretty crappy default content-type headers so this pluign
-		// attempts to provide a proper content-type.
-		content := contentType(match)
+		// Attempt to find the correct content-type
+		content := contentType(p, match)
 
 		// log file for debug purposes.
 		log.WithFields(log.Fields{
@@ -231,11 +235,24 @@ func matches(include string, exclude []string) ([]string, error) {
 // contentType is a helper function that returns the content type for the file
 // based on extension. If the file extension is unknown application/octet-stream
 // is returned.
-func contentType(path string) string {
-	ext := filepath.Ext(path)
-	typ := mime.TypeByExtension(ext)
-	if typ == "" {
-		typ = "application/octet-stream"
+func contentType(p *Plugin, path string) string {
+	fileExt := filepath.Ext(path)
+
+	var contentType string
+	for patternExt := range p.ContentType {
+		if patternExt == fileExt {
+			contentType = p.ContentType[patternExt]
+			break
+		}
 	}
-	return typ
+
+	if contentType == "" {
+		contentType = mime.TypeByExtension(fileExt)
+	}
+
+	if contentType == "" {
+		contentType = "application/octet-stream"
+	}
+
+	return contentType
 }

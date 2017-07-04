@@ -13,8 +13,8 @@ var build = "0" // build number set at compile-time
 
 func main() {
 	app := cli.NewApp()
-	app.Name = "s3 plugin"
-	app.Usage = "s3 plugin"
+	app.Name = "s3_upload plugin"
+	app.Usage = "s3_upload plugin"
 	app.Action = run
 	app.Version = fmt.Sprintf("1.0.%s", build)
 	app.Flags = []cli.Flag{
@@ -100,6 +100,12 @@ func main() {
 			Name:  "env-file",
 			Usage: "source env file",
 		},
+		cli.GenericFlag{
+			Name:   "content-type",
+			Usage:  "content-type settings",
+			EnvVar: "PLUGIN_CONTENT_TYPE",
+			Value:  &StringMapFlag{},
+		},
 	}
 
 	if err := app.Run(os.Args); err != nil {
@@ -128,6 +134,7 @@ func run(c *cli.Context) error {
 		PathStyle:    c.Bool("path-style"),
 		DryRun:       c.Bool("dry-run"),
 		YamlVerified: c.BoolT("yaml-verified"),
+		ContentType:  c.Generic("content-type").(*StringMapFlag).Get(),
 	}
 
 	return plugin.Exec()
