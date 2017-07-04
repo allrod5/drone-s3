@@ -46,6 +46,8 @@ type S3 struct {
 	Source string `json:"source"`
 	Target string `json:"target"`
 
+	ContentType string `json:"content_type"`
+
 	// Recursive uploads
 	Recursive bool `json:"recursive"`
 
@@ -130,6 +132,8 @@ func command(s S3) *exec.Cmd {
 		s.Access,
 		"--region",
 		s.Region,
+		"--content-type",
+		s.ContentType,
 	}
 
 	// if not recursive, remove from the
