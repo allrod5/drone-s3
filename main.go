@@ -48,6 +48,8 @@ type S3 struct {
 
 	ContentType string `json:"content_type"`
 
+	CacheControl string `json:"cache_control"`
+
 	// Recursive uploads
 	Recursive bool `json:"recursive"`
 
@@ -134,6 +136,10 @@ func command(s S3) *exec.Cmd {
 		s.Region,
 		"--content-type",
 		s.ContentType,
+	}
+
+	if s.CacheControl != "" {
+		args = append(args, "--cache-control", s.CacheControl)
 	}
 
 	// if not recursive, remove from the
