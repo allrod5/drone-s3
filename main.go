@@ -134,8 +134,10 @@ func command(s S3) *exec.Cmd {
 		s.Access,
 		"--region",
 		s.Region,
-		"--content-type",
-		s.ContentType,
+	}
+
+	if s.ContentType != "" {
+		args = append(args, "--content-type", s.ContentType)
 	}
 
 	if s.CacheControl != "" {
