@@ -1,10 +1,6 @@
-FROM alpine:3.4
+FROM centurylink/ca-certs
+ENV GODEBUG=netdns=go
 
-RUN apk update && \
-  apk add \
-    ca-certificates \
-    mailcap && \
-  rm -rf /var/cache/apk/*
-
-ADD drone-s3 /bin/
+ADD contrib/mime.types /etc/
+ADD release/linux/amd64/drone-s3 /bin/
 ENTRYPOINT ["/bin/drone-s3"]
