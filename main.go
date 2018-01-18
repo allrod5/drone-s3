@@ -86,11 +86,6 @@ func main() {
 			Usage:  "use path style for bucket paths",
 			EnvVar: "PLUGIN_PATH_STYLE",
 		},
-		cli.BoolTFlag{
-			Name:   "yaml-verified",
-			Usage:  "Ensure the yaml was signed",
-			EnvVar: "DRONE_YAML_VERIFIED",
-		},
 		cli.StringFlag{
 			Name:  "env-file",
 			Usage: "source env file",
@@ -127,7 +122,6 @@ func run(c *cli.Context) error {
 		Encryption:   c.String("encryption"),
 		PathStyle:    c.Bool("path-style"),
 		DryRun:       c.Bool("dry-run"),
-		YamlVerified: c.BoolT("yaml-verified"),
 		ContentType:  c.Generic("content-type").(*StringMapFlag).Get(),
 	}
 
